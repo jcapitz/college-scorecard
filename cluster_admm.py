@@ -32,6 +32,23 @@ def min_r(X,ro,lam):
 				r[i,j] = 0
 	return r
 
+def rsolve(X,rho):
+    
+    m = X.shape[0] # row dimension from X
+    n = X.shape[1] # colum dimemsion from X
+    r = np.empty((m,m,n))
+    for i in xrange(m):
+        for j in xrange(m):
+            lamb = np.random.rand(n) # placeholder, need to create calling lambda solver
+            xhat = X[i] - X[j]
+            if np.linalg.norm(xhat + lamb/rho,2) > 1./rho:# 
+                r[i,j] = (xhat - lamb/rho) * (1. - 1./np.linalg.norm(xhat - 1./(rho * np.linalg.norm(xhat + lamb/rho))))
+            else:
+                r[i,j] = np.zeros(n)
+                                              
+            
+    return r
+
 def min_x( D,ro,lam,r,alpha):
 	m = D.shape[0]
 	n = D.shape[1]
