@@ -4,10 +4,10 @@ import numpy as np
 
 def cluster(D):
 	flag = 0
-	m = D.shape[0]
-	n = D.shape[1]
-	# r = np.ones((m,m,n))
-	lamb = np.zeros((m,m,n))
+	n = D.shape[0]
+	p = D.shape[1]
+	# r = np.ones((n,n,p))
+	lamb = np.zeros((n,n,p))
 	X = D
 	rho = 1
 	alpha = 0.5
@@ -22,7 +22,7 @@ def cluster(D):
 
 		print(np.linalg.norm(X-X_new,2)/np.linalg.norm(X_new,2))
 
-		if (iter > 10):
+		if (iter > 20):
 			break
 
 		iter = iter + 1
@@ -36,55 +36,56 @@ def cluster(D):
 
 def min_r(X,lamb,rho):
     
-    m = X.shape[0] # row dimension from X
-    n = X.shape[1] # colum dimemsion from X
-    r = np.empty((m,m,n))
-    for i in range(m):
-        for j in range(m):
+    n = X.shape[0] # row dimension from X
+    p = X.shape[1] # colum dimemsion from X
+    r = np.empty((n,n,p))
+    for i in range(n):
+        for j in range(n):
             xhat = -(X[i] - X[j] + lamb[i,j]/rho) 
             if np.linalg.norm(xhat,2) > 1./rho:
                 r[i,j] = xhat * (1. - 1./(rho*np.linalg.norm(xhat,2)))
             else:
-                r[i,j] = np.zeros(n)     
+                r[i,j] = np.zeros(p)     
 
     return r
 
 def min_X(X,D,r,lamb,rho,alpha):
-	m = X.shape[0]
-	n = X.shape[1]
-	X_new = np.zeros([m,n])
-	gamma = np.zeros(n)
+	n = X.shape[0]
+	p = X.shape[1]
+	X_new = np.zeros([n,p])
+	gamma = np.zeros(p)
 
 
-	for i in range(m):
-		ind = list(range(m))
+	for i in range(n):
+		ind = list(range(n))
 		del ind[i]
-		gamma = gamma + 1./m*np.sum(lamb[i,ind] + 2. * rho * r[i,ind])
+		gamma += 1./n*np.sum(lamb[i,ind] + 2. * rho * r[i,ind])
 
-	d_bar = np.sum(D)/m
+	d_bar = np.sum(D)/n
 	x_bar = d_bar - alpha/gamma
 
-	for i in range(m):
-		X_new[i] = 1/(2.*rho + alpha/m) * ( (alpha/m) * D[i] + 2. * rho * x_bar - gamma)
+	for i in range(n):
+		ind = list(range(n))
+		del ind[i]
+		X_new[i] = 1/(2.*rho + alpha/n) * ( (alpha/n) * D[i] + 2. * rho * x_bar - 1/n*np.sum(lamb[i,ind] + 2. * rho * r[i,ind],axis = 0))
 
 	return X_new
 
 
 def update_lamb(X,r,lamb,rho):
-	m = X.shape[0]
-	n = X.shape[1]
-	lamb_new = np.empty((m,m,n))
-	for i in range(m):
-		for j in range(m):
-			x_hat = X[i] - X[j]
+	n = X.shape[0]
+	p = X.shape[1]
+	lamb_new = np.empty((n,n,p))
+	for i in range(n):
+		for j in range(n):
 			lamb_new[i,j] = lamb[i,j] + rho * (r[i,j] + X[i] - X[j])
 
 	return lamb_new
 
 
 def get_clusters(X):
-	m = X.shape[0]
-	n = X.shape[1]
+	n = X.shape[0]
+	p = X.shape[1]
 	X = X[X[:,0].argsort()] #SORT X BY FIRST COLUMN
 
 	return X
@@ -92,7 +93,7 @@ def get_clusters(X):
 # df = pd.read_csv('PitchFxExample.csv')
 # D = df.iloc[:,3:].values
 D1 = np.random.normal(0,1,[50,50])
-D2 = np.random.normal(5,2,[50,50])
+D2 = np.random.normal(10,10,[50,50])
 D = np.concatenate((D1,D2))
 
 
