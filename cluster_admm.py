@@ -84,29 +84,25 @@ def update_lamb(X,r,lamb,rho):
 	return lamb_new
 
 
-def get_clusters(X):
-	n = X.shape[0]
-	p = X.shape[1]
-	ind = list(range(n))
-	while True:
-		for i in ind:
-			clusters = []
-			y = []
-			for j in ind:
-				if np.linalg.norm(X[i]-X[j]):
-					y.append(j)
-			clusters.append(y)
+# def get_clusters(X):
+# 	n = X.shape[0]
+# 	p = X.shape[1]
+# 	ind = list(range(n))
+# 	while True:
+# 		for i in ind:
+# 			clusters = []
+# 			y = []
+# 			for j in ind:
+# 				if np.linalg.norm(X[i]-X[j]):
+# 					y.append(j)
+# 			clusters.append(y)
 			
 
 
-
-
-
-
-	# X = X[X[:,0].argsort()] #SORT X BY FIRST COLUMN
+# 	# X = X[X[:,0].argsort()] #SORT X BY FIRST COLUMN
 	
 	
-	return 
+# 	return 
 
 # df = pd.read_csv('PitchFxExample.csv')
 # D = df.iloc[:,3:].values
