@@ -20,13 +20,13 @@ def cluster(D):
 		X_new = min_X(X,D,r_new,lamb,rho,alpha)
 		lamb_new = update_lamb(X_new,r_new,lamb,rho)
 
-		print(np.linalg.norm(X-X_new,2)/np.linalg.norm(X_new,2))
-
-		if (iter > 20):
+		if (iter > 100):
 			break
 
-		iter = iter + 1
-		# print(X_new[0])
+		iter += 1
+	
+		# print(np.linalg.norm(X_new - X)/np.linalg.norm(X_new))
+		print(iter)
 		X = X_new
 		lamb = lamb_new
 
@@ -41,9 +41,9 @@ def min_r(X,lamb,rho):
     r = np.empty((n,n,p))
     for i in range(n):
         for j in range(n):
-            xhat = -(X[i] - X[j] + lamb[i,j]/rho) 
-            if np.linalg.norm(xhat,2) > 1./rho:
-                r[i,j] = xhat * (1. - 1./(rho*np.linalg.norm(xhat,2)))
+            xhat = X[i] - X[j]
+            if np.linalg.norm(-xhat - lamb[i,j]/rho,2) > 1./rho:
+                r[i,j] = (-xhat - lamb[i,j]/rho)*(1. - 1./np.linalg.norm(-xhat - lamb[i,j]/rho,2))
             else:
                 r[i,j] = np.zeros(p)     
 
@@ -86,18 +86,37 @@ def update_lamb(X,r,lamb,rho):
 def get_clusters(X):
 	n = X.shape[0]
 	p = X.shape[1]
-	X = X[X[:,0].argsort()] #SORT X BY FIRST COLUMN
+	ind = list(range(n))
+	while True:
+		for i in ind:
+			clusters = []
+			y = []
+			for j in ind:
+				if np.linalg.norm(X[i]-X[j]):
+					y.append(j)
+			clusters.append(y)
+			
 
-	return X
+
+
+
+
+
+	# X = X[X[:,0].argsort()] #SORT X BY FIRST COLUMN
+	
+	
+	return 
 
 # df = pd.read_csv('PitchFxExample.csv')
 # D = df.iloc[:,3:].values
-D1 = np.random.normal(0,1,[50,50])
-D2 = np.random.normal(10,10,[50,50])
-D = np.concatenate((D1,D2))
+D1 = np.random.normal(0,1,[100,50])
+D2 = np.random.normal(20,1,[100,50])
+D3 = np.random.normal(100,1,[100,50])
+D = np.concatenate((D1,D2,D3))
 
 
 r, X = cluster(D)
+# ind = get_clusters(X)
 # X_new = get_clusters(X)
 
 
