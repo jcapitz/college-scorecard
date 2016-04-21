@@ -1,5 +1,6 @@
 import pandas as pd 
 import numpy as np
+from sklearn import cluster
 
 
 def cluster(D):
@@ -116,6 +117,9 @@ D = np.concatenate((D1,D2,D3))
 
 
 r, X = cluster(D)
+kmeans = cluster.KMeans(n_clusters = 3)
+kmeans.fit(X)
+labels = kmeans.labels_
 # ind = get_clusters(X)
 # X_new = get_clusters(X)
 
